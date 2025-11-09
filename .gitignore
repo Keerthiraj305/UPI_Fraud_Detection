@@ -1,0 +1,33 @@
+# Python virtual environments
+.venv/
+venv/
+
+# Byte-compiled / cached
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Visual Studio Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Model artifacts and data (optional - uncomment if you want to keep them in repo)
+models/
+data/
+
+# Test artifacts
+.pytest_cache/
+
+# Environment files
+.env
+env/
