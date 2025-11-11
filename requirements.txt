@@ -1,8 +1,7 @@
 streamlit
 pandas
 numpy
-# Pin scikit-learn to avoid breaking API changes across minor versions
-scikit-learn>=1.0,<1.3
+scikit-learn==1.1.3
 matplotlib
 seaborn
 plotly
