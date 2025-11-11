@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# VS Code
+.vscode/
+
+# Data and model artifacts
+data/
+models/
+*.joblib
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+
+# Streamlit
+.streamlit/
