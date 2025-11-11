@@ -21,6 +21,17 @@ FEATURE_COLUMNS = [
 LABEL_COLUMN = "fraud_flag"
 
 def load_data(path: Path = DATA_PATH_DEFAULT) -> pd.DataFrame:
+    # If the data file isn't present (common when deploying to Streamlit Cloud
+    # before uploading the dataset), return a small example DataFrame so the
+    # app can start. Encourage the user to upload the full dataset or point to
+    # an external data source.
+    if not path.exists():
+        example = feature_schema_example()
+        df = pd.DataFrame([example])
+        # add the label column with a default 0 (non-fraud) if missing
+        df[LABEL_COLUMN] = 0
+        return df
+
     df = pd.read_csv(path)
     if LABEL_COLUMN not in df.columns:
         raise ValueError(f"Label column '{LABEL_COLUMN}' not found.")
