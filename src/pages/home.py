@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
-from src.utils import load_data, train_models
+# Support both running as a package (src.utils) and as flat module (utils)
+try:
+    from src.utils import load_data, train_models  # type: ignore
+except ModuleNotFoundError:
+    from utils import load_data, train_models
 
 def main():
     st.title("UPI Fraud Detection")

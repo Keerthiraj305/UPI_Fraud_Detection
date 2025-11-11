@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
-from src.utils import load_data
+# Support both running as a package (src.utils) and as flat module (utils)
+try:
+    from src.utils import load_data  # type: ignore
+except ModuleNotFoundError:
+    from utils import load_data
 
 def main():
     st.title("Exploratory Data Analysis")
