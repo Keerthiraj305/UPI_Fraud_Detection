@@ -1,8 +1,7 @@
 streamlit
 pandas
 numpy
-# Use a wheel-available scikit-learn compatible with our code and Streamlit Cloud
-scikit-learn==1.4.2
+scikit-learn
 matplotlib
 seaborn
 plotly
