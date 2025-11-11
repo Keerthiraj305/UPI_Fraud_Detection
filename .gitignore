@@ -5,8 +5,7 @@ __pycache__/
 *.pyd
 .Python
 
-# Environments
-.env
+# Virtual environments
 .venv/
 env/
 venv/
@@ -18,9 +17,20 @@ ENV/
 # Jupyter
 .ipynb_checkpoints/
 
-# Streamlit
+# Streamlit secrets (keep config directory but ignore secrets)
 .streamlit/secrets.toml
+
+# Data and model artifacts (uncomment if you don't want to track raw/generated assets)
+# data/
+# models/
+*.joblib
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Environment files
+.env
+
+# Streamlit build cache
+.streamlit/cache/
