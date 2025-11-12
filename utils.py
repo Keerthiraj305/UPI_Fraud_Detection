@@ -7,18 +7,26 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 import sklearn as _sklearn
 from sklearn.neural_network import MLPClassifier
+<<<<<<< HEAD
+=======
+from sklearn.preprocessing import StandardScaler
+>>>>>>> d5c1840 (Replace Decision Tree with ANN (MLP), add scaling, dataset switcher and low-fraud sample CSV; update UI labels and captions)
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve, precision_recall_curve, average_precision_score, accuracy_score
 from sklearn.model_selection import train_test_split
 
 DATA_PATH_DEFAULT = Path("data/upi_transactions_2025.csv")
+<<<<<<< HEAD
 DATA_PATH_LOW_FRAUD = Path("data/upi_transactions_2025_low_fraud.csv")
 
 DATASETS = {
     "Standard Dataset (40% fraud)": DATA_PATH_DEFAULT,
     "Balanced Dataset (10% fraud)": DATA_PATH_LOW_FRAUD
 }
+=======
+DATA_PATH_LOW_FRAUD = Path("data/upi_transactions_2025_10pct.csv")
+>>>>>>> d5c1840 (Replace Decision Tree with ANN (MLP), add scaling, dataset switcher and low-fraud sample CSV; update UI labels and captions)
 
 FEATURE_COLUMNS = [
     "amount","hour","sender_state","receiver_state","sender_bank","receiver_bank",
@@ -43,7 +51,8 @@ def split_xy(df: pd.DataFrame):
 def build_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
     numeric_cols = X.select_dtypes(include=["int64","float64","int32","float32"]).columns.tolist()
     cat_cols = X.select_dtypes(include=["object","category","bool"]).columns.tolist()
-    num = SimpleImputer(strategy="median")
+    # Impute then scale numeric features for models that benefit from scaling (e.g., ANN)
+    num = Pipeline(steps=[("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())])
     # scikit-learn renamed the `sparse` parameter to `sparse_output` in 1.2.
     # Use the appropriate parameter name depending on installed version.
     try:
@@ -66,7 +75,12 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
 
     pre = build_preprocessor(X)
 
+<<<<<<< HEAD
     ann = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300, random_state=random_state, early_stopping=True, validation_fraction=0.1)
+=======
+    # Use a simple feed-forward ANN (MLP) instead of a decision tree
+    ann = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300, random_state=random_state, early_stopping=True)
+>>>>>>> d5c1840 (Replace Decision Tree with ANN (MLP), add scaling, dataset switcher and low-fraud sample CSV; update UI labels and captions)
     rf = RandomForestClassifier(n_estimators=150, max_depth=16, min_samples_leaf=3, class_weight="balanced", random_state=random_state, n_jobs=1)
 
     ann_pipe = Pipeline([("pre", pre), ("clf", ann)])
@@ -76,7 +90,12 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
     rf_pipe.fit(X_train, y_train)
 
     results = {}
+<<<<<<< HEAD
     for name, pipe in [("Neural Network", ann_pipe), ("Random Forest", rf_pipe)]:
+=======
+    # Note: label the ANN as "ANN" to reflect the model type shown in the UI
+    for name, pipe in [("ANN", ann_pipe), ("Random Forest", rf_pipe)]:
+>>>>>>> d5c1840 (Replace Decision Tree with ANN (MLP), add scaling, dataset switcher and low-fraud sample CSV; update UI labels and captions)
         proba = pipe.predict_proba(X_test)[:,1]
         pred = (proba >= 0.5).astype(int)
         cr = classification_report(y_test, pred, output_dict=True, zero_division=0)

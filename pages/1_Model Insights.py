@@ -4,7 +4,7 @@ from utils import load_data, train_models, DATASETS
 
 st.set_page_config(page_title="Model Insights", layout="wide")
 st.title("📊 Model Insights & Metrics")
-st.caption("Comprehensive performance analysis: Neural Network vs Random Forest with ROC curves, precision-recall metrics, and confusion matrices")
+st.caption("Comprehensive performance analysis: ANN vs Random Forest with ROC curves, precision-recall metrics, and confusion matrices")
 
 # Dataset selection
 dataset_choice = st.sidebar.selectbox(

@@ -5,6 +5,7 @@ from typing import Tuple, Dict, Any
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 import sklearn as _sklearn
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -13,7 +14,7 @@ from sklearn.metrics import classification_report, confusion_matrix, roc_auc_sco
 from sklearn.model_selection import train_test_split
 
 DATA_PATH_DEFAULT = Path("data/upi_transactions_2025.csv")
-DATA_PATH_LOW_FRAUD = Path("data/upi_transactions_2025_low_fraud.csv")
+DATA_PATH_LOW_FRAUD = Path("data/upi_transactions_2025_10pct.csv")
 
 DATASETS = {
     "Standard Dataset (40% fraud)": DATA_PATH_DEFAULT,
@@ -75,7 +76,7 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
 
     pre = build_preprocessor(X)
 
-    ann = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300, random_state=random_state, early_stopping=True, validation_fraction=0.1)
+    ann = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300, random_state=random_state, early_stopping=True)
     rf = RandomForestClassifier(n_estimators=150, max_depth=16, min_samples_leaf=3, class_weight="balanced", random_state=random_state, n_jobs=1)
 
     ann_pipe = Pipeline([("pre", pre), ("clf", ann)])
@@ -85,7 +86,7 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
     rf_pipe.fit(X_train, y_train)
 
     results = {}
-    for name, pipe in [("Neural Network", ann_pipe), ("Random Forest", rf_pipe)]:
+    for name, pipe in [("ANN", ann_pipe), ("Random Forest", rf_pipe)]:
         proba = pipe.predict_proba(X_test)[:,1]
         pred = (proba >= 0.5).astype(int)
         cr = classification_report(y_test, pred, output_dict=True, zero_division=0)
