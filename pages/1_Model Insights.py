@@ -1,18 +1,25 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-from utils import load_data, train_models, DATA_PATH_DEFAULT
+from utils import load_data, train_models, DATASETS
 
 st.set_page_config(page_title="Model Insights", layout="wide")
 st.title("📊 Model Insights & Metrics")
-st.caption("Decision Tree vs Random Forest — charts, curves, and confusion matrices")
+st.caption("Comprehensive performance analysis: Neural Network vs Random Forest with ROC curves, precision-recall metrics, and confusion matrices")
+
+# Dataset selection
+dataset_choice = st.sidebar.selectbox(
+    "Select Dataset",
+    list(DATASETS.keys()),
+    help="Choose between different fraud rate datasets for training"
+)
 
 @st.cache_resource(show_spinner=True)
-def _train():
-    df = load_data(DATA_PATH_DEFAULT)
+def _train(dataset_path):
+    df = load_data(dataset_path)
     models, testset, results = train_models(df)
     return models, testset, results
 
-models, testset, results = _train()
+models, testset, results = _train(DATASETS[dataset_choice])
 (X_test, y_test) = testset
 
 def plot_roc(name, roc):
