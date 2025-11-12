@@ -1,31 +1,40 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-from utils import load_data, train_models, feature_schema_example, DATA_PATH_DEFAULT
+from utils import load_data, train_models, feature_schema_example, DATASETS
 import joblib
 
-st.set_page_config(page_title="UPI Fraud Detection (DT & RF)", layout="wide")
+st.set_page_config(page_title="UPI Fraud Detection", layout="wide")
 st.title("🛡️ UPI Fraud Detection — Live Prediction")
-st.caption("Models: Decision Tree & Random Forest — the app **auto-trains** on startup using the bundled dataset (~40% fraud).")
+st.caption("Using Neural Network & Random Forest models trained on UPI transaction data to detect fraudulent patterns.")
+
+# Dataset selection
+dataset_choice = st.sidebar.selectbox(
+    "Select Dataset",
+    list(DATASETS.keys()),
+    help="Choose between different fraud rate datasets for training"
+)
 
 @st.cache_resource(show_spinner=True)
-def _train():
-    df = load_data(DATA_PATH_DEFAULT)
+def _train(dataset_path):
+    df = load_data(dataset_path)
     models, testset, results = train_models(df)
     Path("models").mkdir(exist_ok=True)
-    joblib.dump(models[0], "models/decision_tree.joblib")
+    joblib.dump(models[0], "models/neural_network.joblib")
     joblib.dump(models[1], "models/random_forest.joblib")
     return models, testset, results
 
-models, testset, results = _train()
-dt_pipe, rf_pipe = models
+models, testset, results = _train(DATASETS[dataset_choice])
+ann_pipe, rf_pipe = models
 
 with st.expander("Dataset info & class balance", expanded=False):
     from utils import split_xy
-    df = load_data(DATA_PATH_DEFAULT)
+    df = load_data(DATASETS[dataset_choice])
     X, y = split_xy(df)
     st.write("Rows:", len(df))
-    st.write("Class counts:", y.value_counts().to_dict())
+    fraud_count = y.sum()
+    fraud_pct = (fraud_count / len(y)) * 100
+    st.write(f"Class counts: Legit={len(y)-fraud_count}, Fraud={fraud_count} ({fraud_pct:.1f}%)")
     st.dataframe(df.head(20))
 
 st.subheader("Enter a transaction")
@@ -63,17 +72,17 @@ if submitted:
         "device_type": device_type,
         "is_vpa_verified": 1 if is_verified=="Yes" else 0
     }])
-    dt_p = dt_pipe.predict_proba(row)[0,1]
+    ann_p = ann_pipe.predict_proba(row)[0,1]
     rf_p = rf_pipe.predict_proba(row)[0,1]
-    dt_pred = "FRAUD" if dt_p>=0.5 else "LEGIT"
+    ann_pred = "FRAUD" if ann_p>=0.5 else "LEGIT"
     rf_pred = "FRAUD" if rf_p>=0.5 else "LEGIT"
 
     st.success("Prediction complete.")
     c1, c2 = st.columns(2)
     with c1:
-        st.metric("Decision Tree", f"{dt_pred}", f"Prob: {dt_p:.3f}")
+        st.metric("Neural Network", f"{ann_pred}", f"Prob: {ann_p:.3f}")
     with c2:
         st.metric("Random Forest", f"{rf_pred}", f"Prob: {rf_p:.3f}")
     st.info("Tip: Try odd hours (e.g., 1 AM), high amounts, low 7‑day history, and unverified VPA to see fraud scores increase.")
 
-st.caption("Models retrain automatically on first load. Saved models are in ./models.")
+st.caption("Models are trained when you first load the page. Trained models are saved in the ./models directory.")
