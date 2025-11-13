@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit secrets (keep config directory but ignore secrets)
+.streamlit/secrets.toml
+
+# Data and model artifacts (uncomment if you don't want to track raw/generated assets)
+# data/
+# models/
+*.joblib
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Streamlit build cache
+.streamlit/cache/

@@ -1,4 +1,10 @@
 streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+joblib
+streamlit
 scikit-learn
 pandas
 numpy
