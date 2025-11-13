@@ -1,0 +1,26 @@
+Class distribution (label counts):
+{0: 9933, 1: 67}
+
+Random Forest classification report:
+              precision    recall  f1-score   support
+
+           0     0.9935    1.0000    0.9967      1987
+           1     0.0000    0.0000    0.0000        13
+
+    accuracy                         0.9935      2000
+   macro avg     0.4968    0.5000    0.4984      2000
+weighted avg     0.9870    0.9935    0.9903      2000
+
+Random Forest ROC-AUC: 0.6515
+
+Gradient Boosting classification report:
+              precision    recall  f1-score   support
+
+           0     0.9935    0.9950    0.9942      1987
+           1     0.0000    0.0000    0.0000        13
+
+    accuracy                         0.9885      2000
+   macro avg     0.4967    0.4975    0.4971      2000
+weighted avg     0.9870    0.9885    0.9878      2000
+
+Gradient Boosting ROC-AUC: 0.6680
