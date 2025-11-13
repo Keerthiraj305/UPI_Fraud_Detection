@@ -5,14 +5,21 @@ from typing import Tuple, Dict, Any
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 import sklearn as _sklearn
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve, precision_recall_curve, average_precision_score, accuracy_score
 from sklearn.model_selection import train_test_split
 
 DATA_PATH_DEFAULT = Path("data/upi_transactions_2025.csv")
+DATA_PATH_LOW_FRAUD = Path("data/upi_transactions_2025_10pct.csv")
+
+DATASETS = {
+    "Standard Dataset (40% fraud)": DATA_PATH_DEFAULT,
+    "Balanced Dataset (10% fraud)": DATA_PATH_LOW_FRAUD
+}
 
 FEATURE_COLUMNS = [
     "amount","hour","sender_state","receiver_state","sender_bank","receiver_bank",
@@ -69,17 +76,17 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
 
     pre = build_preprocessor(X)
 
-    dt = DecisionTreeClassifier(max_depth=10, min_samples_leaf=5, class_weight="balanced", random_state=random_state)
+    ann = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300, random_state=random_state, early_stopping=True)
     rf = RandomForestClassifier(n_estimators=150, max_depth=16, min_samples_leaf=3, class_weight="balanced", random_state=random_state, n_jobs=1)
 
-    dt_pipe = Pipeline([("pre", pre), ("clf", dt)])
+    ann_pipe = Pipeline([("pre", pre), ("clf", ann)])
     rf_pipe = Pipeline([("pre", pre), ("clf", rf)])
 
-    dt_pipe.fit(X_train, y_train)
+    ann_pipe.fit(X_train, y_train)
     rf_pipe.fit(X_train, y_train)
 
     results = {}
-    for name, pipe in [("Decision Tree", dt_pipe), ("Random Forest", rf_pipe)]:
+    for name, pipe in [("ANN", ann_pipe), ("Random Forest", rf_pipe)]:
         proba = pipe.predict_proba(X_test)[:,1]
         pred = (proba >= 0.5).astype(int)
         cr = classification_report(y_test, pred, output_dict=True, zero_division=0)
@@ -96,7 +103,7 @@ def train_models(df: pd.DataFrame, test_size: float = 0.25, random_state: int = 
             proba=proba, pred=pred, report=cr, cm=cm, roc=(fpr,tpr), pr=(prec,rec), ap=ap, auc=auc, acc=acc
         )
 
-    return (dt_pipe, rf_pipe), (X_test, y_test), results
+    return (ann_pipe, rf_pipe), (X_test, y_test), results
 
 def feature_schema_example() -> Dict[str, Any]:
     return {
